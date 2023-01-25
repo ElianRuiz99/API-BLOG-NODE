@@ -2,6 +2,8 @@ const { connection } = require("./database/connection");
 const express = require("express");
 const cors = require("cors");
 
+const articleRoute = require('./routes/articleRoute');
+
 // Inicializacion de la app
 console.log('Aplicacion de Node esta Funcionando!');
 
@@ -18,23 +20,15 @@ app.use(cors());
 // Convertir Body a objeto js
 app.use(express.json());
 
+// Cargar Rutas
+app.use('/api', articleRoute);
+
 // Crear rutas
 app.get("/", (req, res) => {
 
     return res.status(200).send(`
         <h1>Creando API REST con Node.js</h1>
     `)
-    
-});
-
-app.get("/prueba", (req, res) => {
-    console.log("Se ha ejecutado el endpoint /prueba");
-
-    return res.status(200).json({
-        curso: 'Master en Node',
-        estudiante: "Elian Ruiz",
-        fecha: "25/01/2023"
-    })
     
 });
 
