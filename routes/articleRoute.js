@@ -8,5 +8,8 @@ const ArticleController = require('../controller/articleController');
 router.get("/ruta-de-prueba", ArticleController.prueba);
 router.get("/curso", ArticleController.curso);
 
+//Ruta Crear
+router.post("/create", ArticleController.create);
+
 
 module.exports = router;
