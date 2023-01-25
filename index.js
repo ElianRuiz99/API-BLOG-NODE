@@ -19,7 +19,24 @@ app.use(cors());
 app.use(express.json());
 
 // Crear rutas
+app.get("/", (req, res) => {
 
+    return res.status(200).send(`
+        <h1>Creando API REST con Node.js</h1>
+    `)
+    
+});
+
+app.get("/prueba", (req, res) => {
+    console.log("Se ha ejecutado el endpoint /prueba");
+
+    return res.status(200).json({
+        curso: 'Master en Node',
+        estudiante: "Elian Ruiz",
+        fecha: "25/01/2023"
+    })
+    
+});
 
 // Crear Servidor y escuchar peticiones http
 app.listen( port, () => {
