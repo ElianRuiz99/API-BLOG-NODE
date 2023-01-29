@@ -1,6 +1,7 @@
 const validator = require('validator');
 const Article = require("../models/Article");
 
+// Inicio de metodos de prueba
 const prueba = (req, res) => {
     return res.status(200).json({
         mensaje: "Soy una Accion de prueba en el controller"
@@ -17,6 +18,7 @@ const curso = (req, res) => {
     });
     
 }
+// Fin de metodos de prueba
 
 const create = (req, res) => {
 
@@ -66,8 +68,27 @@ const create = (req, res) => {
 
 }
 
+const listArticles = (req, res) => {
+    let query = Article.find({}).exec((err, articles) => {
+        if( err || !articles ){
+            return res.status(404).json({
+                status: "error",
+                mensaje: "No se han encontrado articulos"
+            });
+        }
+
+        return res.status(200).json({
+            status: "Success",
+            menssage: "Listar Articulos",
+            articles: articles
+        });
+    })
+
+}
+
 module.exports = {
     prueba,
     curso,
-    create
+    create,
+    listArticles,
 }
