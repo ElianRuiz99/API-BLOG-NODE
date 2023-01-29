@@ -18,7 +18,8 @@ const port = 3900;
 app.use(cors());
 
 // Convertir Body a objeto js
-app.use(express.json());
+app.use(express.json()); // Recibir datos con content-type app/json
+app.use(express.urlencoded({extended:true})); // Recibir datos por form-urlencoded
 
 // Cargar Rutas
 app.use('/api', articleRoute);
