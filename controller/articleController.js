@@ -1,4 +1,5 @@
 const validator = require('validator');
+const Article = require("../models/Article");
 
 const prueba = (req, res) => {
     return res.status(200).json({
@@ -39,13 +40,30 @@ const create = (req, res) => {
     }
 
     // 3.Crear objeto a guardar
-    // 4.Asignar valores al modelo(Manual o Aoutomatico)
+    const article = new Article(params);
+
+    // 4.Asignar valores al modelo(Manual o Automatico)
+    // Manual
+    // article.title = params.title;
+    // Automatico: Agregar new Article(params);
+
     // 5.Guardar articulo en la base de datos
-    // 7.Devolver el resultado
-    return res.status(200).json({
-        mensaje: "Accion de guardar",
-        params
+    article.save((err, saveArticle) => {
+        if( err || !saveArticle){
+            return res.status(400).json({
+                status: "error",
+                mensaje: "No se ha guardado el articulo"
+            });
+        }
+
+        // 7.Devolver el resultado
+        return res.status(200).json({
+            status: "Success",
+            article: saveArticle,
+            menssage: "Accion de guardar",
+        });
     });
+
 }
 
 module.exports = {
