@@ -1,6 +1,7 @@
 const Article = require("../models/Article");
 const { validarDatos } = require("../helpers/validarDatos");
 const fs = require("fs");
+const path = require("path");
 
 // Inicio de metodos de prueba
 const prueba = (req, res) => {
@@ -17,7 +18,7 @@ const curso = (req, res) => {
         estudiante: "Elian Ruiz",
         fecha: "25/01/2023"
     });
-    
+
 }
 // Fin de metodos de prueba
 
@@ -45,7 +46,7 @@ const create = (req, res) => {
 
     // 5.Guardar articulo en la base de datos
     article.save((err, saveArticle) => {
-        if( err || !saveArticle){
+        if (err || !saveArticle) {
             return res.status(400).json({
                 status: "error",
                 mensaje: "No se ha guardado el articulo"
@@ -64,26 +65,26 @@ const create = (req, res) => {
 const listArticles = (req, res) => {
     let query = Article.find({});
 
-    if( req.params.limit && req.params.limit > 0 ){
+    if (req.params.limit && req.params.limit > 0) {
         query.limit(req.params.limit);
     }
 
-    query.sort({date: -1})
+    query.sort({ date: -1 })
         .exec((err, articles) => {
-        if( err || !articles ){
-            return res.status(404).json({
-                status: "error",
-                mensaje: "No se han encontrado articulos"
-            });
-        }
+            if (err || !articles) {
+                return res.status(404).json({
+                    status: "error",
+                    mensaje: "No se han encontrado articulos"
+                });
+            }
 
-        return res.status(200).json({
-            status: "Success",
-            menssage: "Listar Articulos",
-            parametro: req.params.limit,
-            articles: articles
-        });
-    })
+            return res.status(200).json({
+                status: "Success",
+                menssage: "Listar Articulos",
+                parametro: req.params.limit,
+                articles: articles
+            });
+        })
 }
 
 const listOne = (req, res) => {
@@ -91,7 +92,7 @@ const listOne = (req, res) => {
 
     Article.findById(id, (err, article) => {
         // Si no existe
-        if( err || !article ){
+        if (err || !article) {
             return res.status(404).json({
                 status: "error",
                 mensaje: "No se encontro el Articulo"
@@ -110,8 +111,8 @@ const listOne = (req, res) => {
 const deleteOne = (req, res) => {
     let articleId = req.params.id;
 
-    Article.findOneAndDelete({_id: articleId}, (err, articleDelete) => {
-        if( err || !articleDelete ){
+    Article.findOneAndDelete({ _id: articleId }, (err, articleDelete) => {
+        if (err || !articleDelete) {
             return res.status(500).json({
                 status: "Error",
                 message: "El articulo No se Elimino"
@@ -144,11 +145,11 @@ const edit = (req, res) => {
     }
 
     // Buscar y actualizar articulo
-    Article.findOneAndUpdate({_id: articleId}, newParams, {new: true},(err, newArticle) => {
+    Article.findOneAndUpdate({ _id: articleId }, newParams, { new: true }, (err, newArticle) => {
         // Devolver una respuesta 
-        if( err || !newArticle){
+        if (err || !newArticle) {
             return res.status(500).json({
-                status:"Error",
+                status: "Error",
                 message: "Error al actualizar el articulo"
             });
         }
@@ -166,13 +167,12 @@ const upload = (req, res) => {
     // esto se realiza desde el route
 
     // Recoger el fichero de imagen subido
-    if(!req.file && !req.files){
+    if (!req.file && !req.files) {
         return res.status(404).json({
             status: "Error",
-            message:"Peticion Invalida"
-       });
+            message: "Peticion Invalida"
+        });
     }
-    console.log(req.file);
 
     // Nombre del archivo 
     let fileName = req.file.originalname;
@@ -183,23 +183,53 @@ const upload = (req, res) => {
     let extenFile = fileSplit[1];
 
     // Comprobar extencion 
-    if( extenFile != "jpg" && extenFile != "png" && extenFile != "jpeg" && extenFile != "gif"){
+    if (extenFile != "jpg" && extenFile != "png" && extenFile != "jpeg" && extenFile != "gif") {
         // Borrar Archivo
         fs.unlink(req.file.path, (err) => {
-           return res.status(400).json({
+            return res.status(400).json({
                 status: "Error",
-                message:"Imagen invalida"
-           });
+                message: "Imagen invalida"
+            });
         });
-    }else{
-        return res.status(200).json({
+    } else {
+        // Tomar id del articulo a eliminar
+        let articleId = req.params.id;
+
+        // Buscar y actualizar articulo
+        Article.findOneAndUpdate({ _id: articleId }, {picture: req.file.filename}, { new: true }, (err, newArticle) => {
+            // Devolver una respuesta 
+            if (err || !newArticle) {
+                return res.status(500).json({
+                    status: "Error",
+                    message: "Error al actualizar el articulo"
+                });
+            }
+
+            return res.status(200).json({
                 status: "Success",
+                menssage: "Articulo actualizado",
                 extenFile,
+                article: newArticle,
                 file: req.file
             });
+        });
     }
+}
 
-    
+const showImg = (req, res) => {
+    let nameImg = req.params.nameImg;
+    let ruteImg = "./images/articles/"+ nameImg;
+
+    fs.stat(ruteImg, (err, exist) => {
+        if(exist){
+            return res.sendFile(path.resolve(ruteImg));
+        }else{
+            return res.status(404).json({
+                status: "Error",
+                message: "La imagen no Existe"
+            });
+        }
+    })
 }
 
 module.exports = {
@@ -211,5 +241,5 @@ module.exports = {
     deleteOne,
     edit,
     upload,
-
+    showImg,
 }

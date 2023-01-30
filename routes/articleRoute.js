@@ -40,4 +40,7 @@ router.put("/edit/:id", ArticleController.edit);
 // Subir una imagen
 router.post("/uploadImg/:id", [uploads.single("file0")], ArticleController.upload);
 
+// Mostrar una imagen
+router.get("/showImg/:nameImg", ArticleController.showImg);
+
 module.exports = router;
