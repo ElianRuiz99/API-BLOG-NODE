@@ -14,4 +14,7 @@ router.post("/create", ArticleController.create);
 // Listar todos los articulos
 router.get("/list/:limit?", ArticleController.listArticles);
 
+// Listar un Articulo
+router.get("/listOne/:id", ArticleController.listOne);
+
 module.exports = router;

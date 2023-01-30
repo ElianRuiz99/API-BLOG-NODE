@@ -94,9 +94,31 @@ const listArticles = (req, res) => {
     })
 }
 
+const listOne = (req, res) => {
+    let id = req.params.id;
+
+    Article.findById(id, (err, article) => {
+        // Si no existe
+        if( err || !article ){
+            return res.status(404).json({
+                status: "error",
+                mensaje: "No se encontro el Articulo"
+            });
+        }
+
+        // Si exite
+        return res.status(200).json({
+            status: "Success",
+            menssage: "Articulo Encontrado",
+            article
+        });
+    });
+}
+
 module.exports = {
     prueba,
     curso,
     create,
     listArticles,
+    listOne,
 }
