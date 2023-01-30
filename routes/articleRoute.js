@@ -17,4 +17,7 @@ router.get("/list/:limit?", ArticleController.listArticles);
 // Listar un Articulo
 router.get("/listOne/:id", ArticleController.listOne);
 
+// Eliminar un Articulo
+router.delete("/deleteOne/:id", ArticleController.deleteOne);
+
 module.exports = router;

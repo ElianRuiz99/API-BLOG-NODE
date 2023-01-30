@@ -73,7 +73,7 @@ const listArticles = (req, res) => {
     let query = Article.find({});
 
     if( req.params.limit && req.params.limit > 0 ){
-        query.limit(1)
+        query.limit(req.params.limit);
     }
 
     query.sort({date: -1})
@@ -115,10 +115,30 @@ const listOne = (req, res) => {
     });
 }
 
+const deleteOne = (req, res) => {
+    let article_id = req.params.id;
+
+    Article.findOneAndDelete({_id: article_id}, (err, articleDelete) => {
+        if( err || !articleDelete ){
+            return res.status(500).json({
+                status: "Error",
+                message: "El articulo No se Elimino"
+            });
+        }
+
+        return res.status(200).json({
+            status: "Success",
+            menssage: "Articulo eliminado exitosamente",
+            articleDelete
+        });
+    });
+}
+
 module.exports = {
     prueba,
     curso,
     create,
     listArticles,
     listOne,
+    deleteOne,
 }
