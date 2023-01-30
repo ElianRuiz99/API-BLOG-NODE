@@ -1,8 +1,22 @@
 const express = require('express');
-const router = express.Router();
-
+const multer = require("multer");
 // Cargar el Controlador
 const ArticleController = require('../controller/articleController');
+
+const router = express.Router();
+
+// Configurar almacenamiento ( destino y nombre del archivo )
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, './images/articles/');
+    },
+    filename: function(req, file, cb){
+        cb(null, "articulo_" + file.originalname);
+    }
+})
+
+// unir multer y el almacenamiento
+const uploads = multer({storage});
 
 // Rutas de Prueba
 router.get("/ruta-de-prueba", ArticleController.prueba);
@@ -22,5 +36,8 @@ router.delete("/deleteOne/:id", ArticleController.deleteOne);
 
 // Editar Articulo
 router.put("/edit/:id", ArticleController.edit);
+
+// Subir una imagen
+router.post("/uploadImg/:id", [uploads.single("file0")], ArticleController.upload);
 
 module.exports = router;

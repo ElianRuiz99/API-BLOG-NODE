@@ -1,5 +1,6 @@
 const Article = require("../models/Article");
 const { validarDatos } = require("../helpers/validarDatos");
+const fs = require("fs");
 
 // Inicio de metodos de prueba
 const prueba = (req, res) => {
@@ -160,6 +161,47 @@ const edit = (req, res) => {
     });
 }
 
+const upload = (req, res) => {
+    // Configurar multer
+    // esto se realiza desde el route
+
+    // Recoger el fichero de imagen subido
+    if(!req.file && !req.files){
+        return res.status(404).json({
+            status: "Error",
+            message:"Peticion Invalida"
+       });
+    }
+    console.log(req.file);
+
+    // Nombre del archivo 
+    let fileName = req.file.originalname;
+
+    // Extencion del archivo
+    let fileSplit = fileName.split("\.");
+    console.log(fileSplit);
+    let extenFile = fileSplit[1];
+
+    // Comprobar extencion 
+    if( extenFile != "jpg" && extenFile != "png" && extenFile != "jpeg" && extenFile != "gif"){
+        // Borrar Archivo
+        fs.unlink(req.file.path, (err) => {
+           return res.status(400).json({
+                status: "Error",
+                message:"Imagen invalida"
+           });
+        });
+    }else{
+        return res.status(200).json({
+                status: "Success",
+                extenFile,
+                file: req.file
+            });
+    }
+
+    
+}
+
 module.exports = {
     prueba,
     curso,
@@ -167,5 +209,7 @@ module.exports = {
     listArticles,
     listOne,
     deleteOne,
-    edit
+    edit,
+    upload,
+
 }
