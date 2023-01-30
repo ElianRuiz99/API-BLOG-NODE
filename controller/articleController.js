@@ -69,7 +69,15 @@ const create = (req, res) => {
 }
 
 const listArticles = (req, res) => {
-    let query = Article.find({}).exec((err, articles) => {
+
+    let query = Article.find({});
+
+    if( req.params.limit && req.params.limit > 0 ){
+        query.limit(1)
+    }
+
+    query.sort({date: -1})
+        .exec((err, articles) => {
         if( err || !articles ){
             return res.status(404).json({
                 status: "error",
@@ -80,10 +88,10 @@ const listArticles = (req, res) => {
         return res.status(200).json({
             status: "Success",
             menssage: "Listar Articulos",
+            parametro: req.params.limit,
             articles: articles
         });
     })
-
 }
 
 module.exports = {
