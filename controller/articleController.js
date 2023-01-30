@@ -229,7 +229,30 @@ const showImg = (req, res) => {
                 message: "La imagen no Existe"
             });
         }
-    })
+    });
+}
+
+const search = (req, res) => {
+    let searching = req.params.text;
+
+    Article.find({ "$or": [
+        {"title": { "$regex": searching, "$options": "i" }},
+        {"content": { "$regex": searching, "$options": "i" }}
+    ]})
+    .sort({date: -1})
+    .exec((err, articles) => {
+        if(err || !articles || articles <= 0){
+            return res.status(404).json({
+                status: "Error",
+                message: "No se encontraron articulos"
+            });
+        }
+
+        return res.status(200).json({
+            status: "Success",
+            articles
+        });
+    });
 }
 
 module.exports = {
@@ -242,4 +265,5 @@ module.exports = {
     edit,
     upload,
     showImg,
+    search
 }

@@ -43,4 +43,7 @@ router.post("/uploadImg/:id", [uploads.single("file0")], ArticleController.uploa
 // Mostrar una imagen
 router.get("/showImg/:nameImg", ArticleController.showImg);
 
+// Bucador
+router.get("/search/:text", ArticleController.search);
+
 module.exports = router;
