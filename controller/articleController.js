@@ -1,5 +1,5 @@
-const validator = require('validator');
 const Article = require("../models/Article");
+const { validarDatos } = require("../helpers/validarDatos");
 
 // Inicio de metodos de prueba
 const prueba = (req, res) => {
@@ -21,19 +21,12 @@ const curso = (req, res) => {
 // Fin de metodos de prueba
 
 const create = (req, res) => {
-
     // 1.Recoger Parametros
     let params = req.body;
 
     // 2.Validar datos
     try {
-        let validateTitle = !validator.isEmpty(params.title) && validator.isLength(params.title, {min: 5, max: undefined});
-        let validateContent = !validator.isEmpty(params.content);
-
-        if(!validateContent || !validateTitle){
-            throw new Error("NO se ha validado la informacion")
-        }
-
+        validarDatos(params);
     } catch (err) {
         return res.status(400).json({
             status: "error",
@@ -65,11 +58,9 @@ const create = (req, res) => {
             menssage: "Accion de guardar",
         });
     });
-
 }
 
 const listArticles = (req, res) => {
-
     let query = Article.find({});
 
     if( req.params.limit && req.params.limit > 0 ){
@@ -143,13 +134,7 @@ const edit = (req, res) => {
 
     // Validar datos
     try {
-        let validateTitle = !validator.isEmpty(newParams.title) && validator.isLength(newParams.title, {min: 5, max: undefined});
-        let validateContent = !validator.isEmpty(newParams.content);
-
-        if(!validateContent || !validateTitle){
-            throw new Error("NO se ha validado la informacion")
-        }
-
+        validarDatos(newParams);
     } catch (err) {
         return res.status(400).json({
             status: "error",
@@ -159,6 +144,7 @@ const edit = (req, res) => {
 
     // Buscar y actualizar articulo
     Article.findOneAndUpdate({_id: articleId}, newParams, {new: true},(err, newArticle) => {
+        // Devolver una respuesta 
         if( err || !newArticle){
             return res.status(500).json({
                 status:"Error",
@@ -172,8 +158,6 @@ const edit = (req, res) => {
             article: newArticle
         });
     });
-
-    // Devolver una respuesta 
 }
 
 module.exports = {
