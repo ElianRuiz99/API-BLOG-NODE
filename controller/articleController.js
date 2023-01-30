@@ -116,9 +116,9 @@ const listOne = (req, res) => {
 }
 
 const deleteOne = (req, res) => {
-    let article_id = req.params.id;
+    let articleId = req.params.id;
 
-    Article.findOneAndDelete({_id: article_id}, (err, articleDelete) => {
+    Article.findOneAndDelete({_id: articleId}, (err, articleDelete) => {
         if( err || !articleDelete ){
             return res.status(500).json({
                 status: "Error",
@@ -134,6 +134,48 @@ const deleteOne = (req, res) => {
     });
 }
 
+const edit = (req, res) => {
+    // Tomar id del articulo a eliminar
+    let articleId = req.params.id;
+
+    // Tomar datos del body
+    let newParams = req.body;
+
+    // Validar datos
+    try {
+        let validateTitle = !validator.isEmpty(newParams.title) && validator.isLength(newParams.title, {min: 5, max: undefined});
+        let validateContent = !validator.isEmpty(newParams.content);
+
+        if(!validateContent || !validateTitle){
+            throw new Error("NO se ha validado la informacion")
+        }
+
+    } catch (err) {
+        return res.status(400).json({
+            status: "error",
+            mensaje: "Faltan datos por enviar"
+        });
+    }
+
+    // Buscar y actualizar articulo
+    Article.findOneAndUpdate({_id: articleId}, newParams, {new: true},(err, newArticle) => {
+        if( err || !newArticle){
+            return res.status(500).json({
+                status:"Error",
+                message: "Error al actualizar el articulo"
+            });
+        }
+
+        return res.status(200).json({
+            status: "Success",
+            menssage: "Articulo actualizado",
+            article: newArticle
+        });
+    });
+
+    // Devolver una respuesta 
+}
+
 module.exports = {
     prueba,
     curso,
@@ -141,4 +183,5 @@ module.exports = {
     listArticles,
     listOne,
     deleteOne,
+    edit
 }

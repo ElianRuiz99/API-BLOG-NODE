@@ -20,4 +20,7 @@ router.get("/listOne/:id", ArticleController.listOne);
 // Eliminar un Articulo
 router.delete("/deleteOne/:id", ArticleController.deleteOne);
 
+// Editar Articulo
+router.put("/edit/:id", ArticleController.edit);
+
 module.exports = router;
